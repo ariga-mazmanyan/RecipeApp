@@ -20,7 +20,7 @@ class ElementsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CommentSerialize(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
         fields = ('user', 'body')

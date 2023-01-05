@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from product.models import Product, Likes, Comments
-from product.serializers import ProductSerializer
+from product.serializers import ProductSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -34,7 +34,7 @@ class ProductLikeView(APIView):
         user = User.objects.get(username=request.user.username)
         product = Product.objects.get(id=product_id)
 
-        new_like = Likes(user=user, post=post)
+        new_like = Likes(user=user, product=product)
         new_like.alreadyLiked = True
 
         product.likes += 1
@@ -71,3 +71,19 @@ class ProductSearchView(APIView):
         product.delete()
 
         return Response(status.HTTP_202_ACCEPTED)
+
+
+class ProductCommentView(APIView):
+
+    def post(self, request, product_id):
+
+        user = User.objects.get(username=request.user.username)
+        product = Product.objects.get(id=product_id)
+
+        comment = CommentSerializer(data=request.POST)
+        comment.is_valid(raise_exception=True)
+
+        comment.product = product
+        comment.save()
+
+        return Response(status=status.HTTP_202_ACCEPTED)

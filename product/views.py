@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from product.models import Product, Likes
+from product.models import Product, Likes, Comments
 from product.serializers import ProductSerializer
 from rest_framework.permissions import IsAuthenticated
 

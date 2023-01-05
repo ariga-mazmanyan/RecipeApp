@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Product, Category, Elements
+from product.models import Product, Category, Elements, Comments
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -19,4 +19,9 @@ class ElementsSerializer(serializers.ModelSerializer):
         model = Elements
         fields = "__all__"
 
+
+class CommentSerialize(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = ('user', 'body')
 

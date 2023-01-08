@@ -2,23 +2,23 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from product.models import Product, Likes, Comments
-from product.serializers import ProductSerializer, CommentSerializer
+from product.models import Recipe, Like
+from product.serializers import RecipeSerializer, CommentSerializer, FollowingSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
-class ProductView(APIView):
+class RecipeView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        products = Product.objects.all()
+        products = Recipe.objects.all()
 
-        serializer = ProductSerializer(products, many=True)
+        serializer = RecipeSerializer(products, many=True)
 
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = RecipeSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
@@ -27,63 +27,85 @@ class ProductView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ProductLikeView(APIView):
+class RecipeSearchView(APIView):
+    # permission_classes = [IsAuthenticated]
 
-    def post(self, request, product_id):
+    def get(self, request, ingredient):
+
+        recipe = Recipe.objects.filter(ingredient=ingredient)
+        if not recipe:
+            return Response({"recipe": "not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = RecipeSerializer(recipe)
+
+        return Response(serializer.data)
+
+    def delete(self, request, product_name):
+        recipe = Recipe.objects.filter(name=product_name, user=request.user)
+
+        if not recipe:
+            return Response({"product": "not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        recipe.delete()
+
+        return Response(status.HTTP_202_ACCEPTED)
+
+
+class FollowUnfollow(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(user_id=self.request.data.get("user_id"))
+        following_data = FollowingSerializer(user.following.all(), many=True)
+
+        return Response(following_data.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = User.objects.get(user_id=self.request.data.get("user_id"))
+        other_user = User.objects.get(user_id=self.request.data.get("follow"))
+        req_type = request.data.get("type")
+
+        if req_type == "follow":
+            user.following.add(other_user)
+            other_user.followers.add(user)
+            return Response("Following", status=status.HTTP_200_OK)
+
+        elif req_type == "unfollow":
+            user.following.remove(other_user)
+            other_user.followers.remove(user)
+            return Response("Unfollowed", status=status.HTTP_200_OK)
+
+
+class RecipeLikeView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def post(self, request, recipe_id):
 
         user = User.objects.get(username=request.user.username)
-        product = Product.objects.get(id=product_id)
+        recipe = Recipe.objects.get(id=recipe_id)
 
-        new_like = Likes(user=user, product=product)
-        new_like.alreadyLiked = True
+        new_like = Like(user=user, recipe=recipe)
 
-        product.likes += 1
+        recipe.likes += 1
 
-        product.user_likes.add(user)
-        user.liked_posts.add(product)
-        product.save()
+        recipe.user_likes.add(user)
+        user.liked_posts.add(recipe)
+        recipe.save()
         new_like.save()
         user.save()
 
         return Response(status=status.HTTP_200_OK)
 
-    # comment
 
-
-class ProductSearchView(APIView):
-
-    def get(self, request, element):
-
-        product = Product.objects.filter(elements=element)  # we need a filter class
-        if not product:
-            return Response({"product": "not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductSerializer(product)
-
-        return Response(serializer.data)
-
-    def delete(self, request, product_name):
-        product = Product.objects.filter(name=product_name, user=request.user)
-
-        if not product:
-            return Response({"product": "not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        product.delete()
-
-        return Response(status.HTTP_202_ACCEPTED)
-
-
-class ProductCommentView(APIView):
+class RecipeCommentView(APIView):
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, product_id):
 
-        user = User.objects.get(username=request.user.username)
-        product = Product.objects.get(id=product_id)
-
+        recipe = Recipe.objects.get(id=product_id)
         comment = CommentSerializer(data=request.POST)
         comment.is_valid(raise_exception=True)
-
-        comment.product = product
+        comment.recipe = recipe
         comment.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)

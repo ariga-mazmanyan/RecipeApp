@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from product.views import (RecipeView,
+                           RecipeSearchView,
+                           FollowUnfollow,
+                           RecipeLikeView,
+                           RecipeCommentView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('recipes/', RecipeView.as_view()),
+    path('recipe/search/<str:pk>/', RecipeSearchView.as_view()),
+    path('user/followunfollow/', FollowUnfollow.as_view()),
+    path('recipe/like/', RecipeLikeView.as_view()),
+    path('recipe/comment/', RecipeCommentView.as_view()),
 ]

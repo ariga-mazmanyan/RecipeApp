@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from product.models import Recipe, Category, Ingredient, Comment, UserFollowing
-from django.contrib.auth import get_user_model
-User = get_user_model()
+from recipe_app.product.models import Recipe, Category, Ingredient, Comment, UserFollowing
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -40,16 +38,4 @@ class FollowersSerializer(serializers.ModelSerializer):
         model = UserFollowing
         fields = "__all__"
 
-
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-    # def get_following(self, obj):
-    #     return FollowingSerializer(obj.following.all(), many=True).data
-    #
-    # def get_followers(self, obj):
-    #     return FollowersSerializer(obj.followers.all(), many=True).data
 

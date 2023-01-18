@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from product.models import Recipe, Like
-from product.serializers import RecipeSerializer, CommentSerializer, FollowingSerializer
+from recipe_app.product.models import Recipe, Like
+from recipe_app.product.serializers import RecipeSerializer, FollowingSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -11,9 +11,9 @@ class RecipeView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        products = Recipe.objects.all()
+        recipe = Recipe.objects.all()
 
-        serializer = RecipeSerializer(products, many=True)
+        serializer = RecipeSerializer(recipe, many=True)
 
         return Response(serializer.data)
 
@@ -30,9 +30,9 @@ class RecipeView(APIView):
 class RecipeSearchView(APIView):
     # permission_classes = [IsAuthenticated]
 
-    def get(self, request, ingredient):
+    def get(self, request, pk):
 
-        recipe = Recipe.objects.filter(ingredient=ingredient)
+        recipe = Recipe.objects.filter(ingredient=pk)
         if not recipe:
             return Response({"recipe": "not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -40,11 +40,11 @@ class RecipeSearchView(APIView):
 
         return Response(serializer.data)
 
-    def delete(self, request, product_name):
-        recipe = Recipe.objects.filter(name=product_name, user=request.user)
+    def delete(self, request, pk):
+        recipe = Recipe.objects.filter(name=pk, user=request.user)
 
         if not recipe:
-            return Response({"product": "not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"recipe": "not found"}, status=status.HTTP_404_NOT_FOUND)
 
         recipe.delete()
 

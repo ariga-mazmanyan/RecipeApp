@@ -18,27 +18,27 @@ class Recipe(models.Model):
     ingredient = models.ManyToManyField("Ingredient")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     like_count = models.PositiveIntegerField(default=0)
-    comments = models.ForeignKey("Comment", on_delete=models.DO_NOTHING)
-    created_at = models.DateTimeField(auto_now_add=True)
+    comment_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Category(models.Model):
     cuisine = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=50, unique=True, null=False)
     description = models.TextField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=True)
 
 
 class UserFollowing(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    following = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(User, related_name="user_id", on_delete=models.CASCADE)
+    following = models.ForeignKey(User, related_name="following", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['created_at']
@@ -57,9 +57,9 @@ class Like(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe_ = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe_name = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     body = models.TextField()
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['created_on']

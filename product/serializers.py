@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from recipe_app.product.models import Recipe, Category, Ingredient, Comment, UserFollowing
+from product.models import Recipe, Category, Ingredient, Comment, UserFollowing
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class ElementsSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('user', 'body')
+        fields = "__all__"
 
 
 class FollowingSerializer(serializers.ModelSerializer):

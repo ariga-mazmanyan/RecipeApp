@@ -2,13 +2,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from recipe_app.product.models import Recipe, Like
-from recipe_app.product.serializers import RecipeSerializer, FollowingSerializer, CommentSerializer
+from product.models import Recipe, Like
+from product.serializers import RecipeSerializer, FollowingSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
 class RecipeView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         recipe = Recipe.objects.all()

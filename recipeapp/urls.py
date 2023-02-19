@@ -20,16 +20,19 @@ from product.views import (RecipeView,
                            RecipeSearchView,
                            FollowUnfollow,
                            RecipeLikeView,
-                           RecipeCommentView)
+                           RecipeCommentView, CategoryView, IngredientDetailView, IngredientView)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('recipes/', RecipeView.as_view()),
-    path('recipe/search/<str:pk>/', RecipeSearchView.as_view()),
-    path('user/followunfollow/', FollowUnfollow.as_view()),
-    path('recipe/like/', RecipeLikeView.as_view()),
-    path('recipe/comment/', RecipeCommentView.as_view()),
+    path('recipe/details/<str:pk>/', RecipeSearchView.as_view()),
+    path('user/follow/<str:pk>/', FollowUnfollow.as_view()),
+    path('recipe/like/<str:pk>/', RecipeLikeView.as_view()),
+    path('recipe/comment/<str:pk>/', RecipeCommentView.as_view()),
+    path('categories/', CategoryView.as_view()),
+    path('ingredient/', IngredientView.as_view()),
+    path('ingredient/add/', IngredientDetailView.as_view()),
     path("users/", include("users.urls")),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

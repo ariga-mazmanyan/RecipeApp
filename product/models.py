@@ -1,21 +1,11 @@
-# from django.contrib.auth.base_user import AbstractBaseUser
-# from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import User
 from django.db import models
-
-
-# class User(AbstractBaseUser, PermissionsMixin):
-#     user_id = models.CharField(max_length=100, unique=True, primary_key=True)
-#     username = models.CharField(max_length=100, unique=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     user_followers = models.ManyToManyField('self', blank=True)
-#     user_followings = models.ManyToManyField('self', blank=True)
 
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100, unique=True, null=False)
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
-    ingredient = models.ManyToManyField("Ingredient")
+    ingredient_count = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     like_count = models.PositiveIntegerField(default=0)
     comment_count = models.PositiveIntegerField(default=0)
@@ -30,7 +20,8 @@ class Category(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=50, unique=True, null=False)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, null=False)
     description = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now=True)
 
@@ -58,7 +49,7 @@ class Like(models.Model):
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe_name = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    body = models.TextField()
+    body = models.CharField(max_length=200)
     created_on = models.DateTimeField(auto_now=True)
 
     class Meta:
